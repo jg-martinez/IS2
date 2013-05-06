@@ -67,7 +67,7 @@ public class Taxi {
         tiempo--;
         if(tiempo <= 0) {
             if(!ocupado && Math.random() > 0.9) sentido = !sentido;
-            if(!ocupado && Math.random() > 0.9) ocupar(Direccion.direcciones.get((int)Math.random()*Direccion.direcciones.size()));
+            if(!ocupado && Math.random() > 0.9) ocupar(Direccion.direcciones.get((int)(Math.random()*Direccion.direcciones.size())));
             if(sentido) {
                 ubicacion = Direccion.direcciones.get((idDireccion +1)%Direccion.direcciones.size());
             }

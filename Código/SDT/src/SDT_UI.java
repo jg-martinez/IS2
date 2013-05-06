@@ -51,6 +51,7 @@ public class SDT_UI extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jTabbedPane3 = new javax.swing.JTabbedPane();
@@ -83,6 +84,9 @@ public class SDT_UI extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel4.setText("Estado");
 
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel5.setText("Destino");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -102,6 +106,8 @@ public class SDT_UI extends javax.swing.JFrame {
                         .addComponent(jLabel3)
                         .addGap(90, 90, 90)
                         .addComponent(jLabel4)
+                        .addGap(82, 82, 82)
+                        .addComponent(jLabel5)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -112,7 +118,8 @@ public class SDT_UI extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jLabel3)
-                    .addComponent(jLabel4))
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -191,7 +198,7 @@ public class SDT_UI extends javax.swing.JFrame {
         for(Iterator<Taxi> taxiIterador = Taxi.taxis.iterator(); taxiIterador.hasNext();) {
             Taxi taxi = taxiIterador.next();
             //lista.add("ID del taxi: \t" + taxi.id + "\t\tUbicación actual: \t" + taxi.ubicacion + " ");
-            lista.add(String.format("%05d%-14s%-28s%-15s" , taxi.id,"", taxi.ubicacion, taxi.ocupado ? "Ocupado" : "Libre" ));
+            lista.add(String.format("%05d%-14s%-28s%-22s%-28s" , taxi.id,"", taxi.ubicacion, taxi.ocupado ? "Ocupado" : "Libre", taxi.ocupado ? taxi.destino : "" ));
         }
         listaTaxis.setListData(lista.toArray());
     }//GEN-LAST:event_botonRefrescarActionPerformed
@@ -236,6 +243,7 @@ public class SDT_UI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
