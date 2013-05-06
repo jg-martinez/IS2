@@ -131,6 +131,8 @@ public class SDT_UI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jPanel3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+
         jScrollPane2.setViewportView(jTextPane1);
 
         jScrollPane3.setViewportView(jTextPane2);
