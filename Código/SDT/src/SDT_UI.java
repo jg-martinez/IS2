@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.Timer;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import simulador.Direccion;
 import simulador.Taxi;
 
 /*
@@ -22,7 +25,7 @@ public class SDT_UI extends javax.swing.JFrame {
      */
     public SDT_UI() {
         initComponents();
-        Taxi.simular(15);
+        Taxi.simular(30);
         botonRefrescarActionPerformed(null);
         int ratio = 1000; //milliseconds
         ActionListener temporizador = new ActionListener() {
@@ -31,6 +34,24 @@ public class SDT_UI extends javax.swing.JFrame {
             }
         };
         new Timer(ratio, temporizador).start();
+        
+        
+        listaTaxis.addListSelectionListener(new ListSelectionListener()
+        {
+          public void valueChanged(ListSelectionEvent ev)
+          {
+            listaTaxisMouseClicked(null);
+          } 
+        });
+        
+        
+        peticion_direccion.removeAll();
+        List<String> lista = new ArrayList<>();
+        for(Iterator<Direccion> direccionIterador = Direccion.direcciones.iterator(); direccionIterador.hasNext();) {
+            Direccion direccion = direccionIterador.next();
+            lista.add(direccion.toString());
+        }
+        peticion_direccion.setModel(new javax.swing.DefaultComboBoxModel(lista.toArray()));
     }
 
     /**
@@ -42,7 +63,18 @@ public class SDT_UI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jTabbedPane1 = new javax.swing.JTabbedPane();
+        ventanaSolicitar = new javax.swing.JDialog();
+        jPanel5 = new javax.swing.JPanel();
+        solicitarTaxi = new javax.swing.JButton();
+        cerrarVentanaSolicitar = new javax.swing.JButton();
+        jLabel12 = new javax.swing.JLabel();
+        ventanaError = new javax.swing.JDialog();
+        jPanel6 = new javax.swing.JPanel();
+        solicitarTaxiError = new javax.swing.JButton();
+        cerrarVentanaError = new javax.swing.JButton();
+        mensajeError = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        secciones = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -52,25 +84,185 @@ public class SDT_UI extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
+        datosTaxi = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
+        datos_id = new javax.swing.JTextPane();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTextPane2 = new javax.swing.JTextPane();
+        datos_ubicacion = new javax.swing.JTextPane();
         jLabel7 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTextPane3 = new javax.swing.JTextPane();
+        datos_destino = new javax.swing.JTextPane();
         jLabel8 = new javax.swing.JLabel();
         jCheckBox1 = new javax.swing.JCheckBox();
         jLabel9 = new javax.swing.JLabel();
-        jTabbedPane2 = new javax.swing.JTabbedPane();
-        jTabbedPane3 = new javax.swing.JTabbedPane();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        peticion_nombre = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
+        peticion_direccion = new javax.swing.JComboBox();
+        jLabel11 = new javax.swing.JLabel();
+        peticion_telefono = new javax.swing.JTextField();
+        buscarTaxi = new javax.swing.JButton();
+        jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+
+        ventanaSolicitar.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        ventanaSolicitar.setMaximumSize(new java.awt.Dimension(350, 300));
+        ventanaSolicitar.setMinimumSize(new java.awt.Dimension(350, 300));
+        ventanaSolicitar.setPreferredSize(new java.awt.Dimension(350, 300));
+        ventanaSolicitar.setResizable(false);
+        ventanaSolicitar.setType(java.awt.Window.Type.UTILITY);
+        ventanaSolicitar.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowActivated(java.awt.event.WindowEvent evt) {
+                ventanaSolicitarWindowActivated(evt);
+            }
+        });
+
+        solicitarTaxi.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        solicitarTaxi.setText("00001");
+        solicitarTaxi.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                solicitarTaxiActionPerformed(evt);
+            }
+        });
+
+        cerrarVentanaSolicitar.setText("CANCELAR");
+        cerrarVentanaSolicitar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cerrarVentanaSolicitarActionPerformed(evt);
+            }
+        });
+
+        jLabel12.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel12.setText("El taxi disponible mas cercano es:");
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(cerrarVentanaSolicitar, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(105, 105, 105)
+                        .addComponent(solicitarTaxi, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(42, 42, 42)
+                .addComponent(jLabel12)
+                .addContainerGap(42, Short.MAX_VALUE))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                .addGap(65, 65, 65)
+                .addComponent(jLabel12)
+                .addGap(36, 36, 36)
+                .addComponent(solicitarTaxi, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
+                .addComponent(cerrarVentanaSolicitar, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(33, 33, 33))
+        );
+
+        javax.swing.GroupLayout ventanaSolicitarLayout = new javax.swing.GroupLayout(ventanaSolicitar.getContentPane());
+        ventanaSolicitar.getContentPane().setLayout(ventanaSolicitarLayout);
+        ventanaSolicitarLayout.setHorizontalGroup(
+            ventanaSolicitarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        ventanaSolicitarLayout.setVerticalGroup(
+            ventanaSolicitarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        ventanaError.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        ventanaError.setMaximumSize(new java.awt.Dimension(350, 300));
+        ventanaError.setMinimumSize(new java.awt.Dimension(350, 300));
+        ventanaError.setPreferredSize(new java.awt.Dimension(350, 300));
+        ventanaError.setResizable(false);
+        ventanaError.setType(java.awt.Window.Type.UTILITY);
+        ventanaError.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowActivated(java.awt.event.WindowEvent evt) {
+                ventanaErrorWindowActivated(evt);
+            }
+        });
+
+        solicitarTaxiError.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        solicitarTaxiError.setText("00001");
+        solicitarTaxiError.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                solicitarTaxiErrorActionPerformed(evt);
+            }
+        });
+
+        cerrarVentanaError.setText("CANCELAR");
+        cerrarVentanaError.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cerrarVentanaErrorActionPerformed(evt);
+            }
+        });
+
+        mensajeError.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        mensajeError.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        mensajeError.setText("¡ERROR!");
+
+        jLabel13.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel13.setText("Reintentar: ");
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(42, 42, 42)
+                .addComponent(mensajeError)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                .addContainerGap(88, Short.MAX_VALUE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                        .addComponent(jLabel13)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(solicitarTaxiError, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(25, 25, 25))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                        .addComponent(cerrarVentanaError, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(106, 106, 106))))
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                .addGap(65, 65, 65)
+                .addComponent(mensajeError)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(solicitarTaxiError, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel13))
+                .addGap(18, 18, 18)
+                .addComponent(cerrarVentanaError, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(33, 33, 33))
+        );
+
+        javax.swing.GroupLayout ventanaErrorLayout = new javax.swing.GroupLayout(ventanaError.getContentPane());
+        ventanaError.getContentPane().setLayout(ventanaErrorLayout);
+        ventanaErrorLayout.setHorizontalGroup(
+            ventanaErrorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        ventanaErrorLayout.setVerticalGroup(
+            ventanaErrorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         listaTaxis.setFont(new java.awt.Font("Consolas", 0, 11)); // NOI18N
         listaTaxis.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listaTaxis.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listaTaxisMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(listaTaxis);
 
         botonRefrescar.setText("Refrescar");
@@ -131,16 +323,20 @@ public class SDT_UI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jPanel3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        datosTaxi.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        datosTaxi.setEnabled(false);
 
-        jScrollPane2.setViewportView(jTextPane1);
+        datos_id.setFocusable(false);
+        jScrollPane2.setViewportView(datos_id);
 
-        jScrollPane3.setViewportView(jTextPane2);
+        datos_ubicacion.setFocusable(false);
+        jScrollPane3.setViewportView(datos_ubicacion);
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel7.setText("Ubicación:");
 
-        jScrollPane4.setViewportView(jTextPane3);
+        datos_destino.setFocusable(false);
+        jScrollPane4.setViewportView(datos_destino);
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel8.setText("Destino:");
@@ -148,55 +344,51 @@ public class SDT_UI extends javax.swing.JFrame {
         jCheckBox1.setText("Ocupado");
         jCheckBox1.setEnabled(false);
         jCheckBox1.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
-        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox1ActionPerformed(evt);
-            }
-        });
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel9.setText("Datos del taxi: ");
+        jLabel9.setText("Datos del taxi");
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(29, 29, 29)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(jPanel3Layout.createSequentialGroup()
+        javax.swing.GroupLayout datosTaxiLayout = new javax.swing.GroupLayout(datosTaxi);
+        datosTaxi.setLayout(datosTaxiLayout);
+        datosTaxiLayout.setHorizontalGroup(
+            datosTaxiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(datosTaxiLayout.createSequentialGroup()
+                .addGroup(datosTaxiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, datosTaxiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, datosTaxiLayout.createSequentialGroup()
                             .addComponent(jLabel8)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                             .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(datosTaxiLayout.createSequentialGroup()
+                            .addGap(32, 32, 32)
                             .addComponent(jLabel7)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, datosTaxiLayout.createSequentialGroup()
+                        .addGap(32, 32, 32)
                         .addComponent(jLabel9)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jCheckBox1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+        datosTaxiLayout.setVerticalGroup(
+            datosTaxiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, datosTaxiLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(datosTaxiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel9)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jCheckBox1))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel7)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(8, 8, 8)
+                .addGroup(datosTaxiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel8)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(datosTaxiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8))
                 .addContainerGap(23, Short.MAX_VALUE))
         );
 
@@ -207,7 +399,7 @@ public class SDT_UI extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(datosTaxi, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -217,13 +409,88 @@ public class SDT_UI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(datosTaxi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
-        jTabbedPane1.addTab("Taxis", jPanel1);
-        jTabbedPane1.addTab("Nueva Petición", jTabbedPane2);
-        jTabbedPane1.addTab("Log de Peticiones", jTabbedPane3);
+        secciones.addTab("Taxis", jPanel1);
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel6.setText("Nombre: ");
+
+        jLabel10.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel10.setText("Dirección: ");
+
+        peticion_direccion.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jLabel11.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel11.setText("Teléfono: ");
+
+        buscarTaxi.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        buscarTaxi.setText("Buscar taxi");
+        buscarTaxi.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buscarTaxiActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(buscarTaxi, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(peticion_nombre))
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(peticion_direccion, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(peticion_telefono))))
+                .addContainerGap(446, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(28, 28, 28)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(peticion_nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
+                    .addComponent(peticion_direccion))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(peticion_telefono, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(buscarTaxi, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(291, Short.MAX_VALUE))
+        );
+
+        secciones.addTab("Nueva Petición", jPanel3);
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 863, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 504, Short.MAX_VALUE)
+        );
+
+        secciones.addTab("Log Peticiones", jPanel4);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         jLabel1.setText("Sistema de Despacho de Taxis");
@@ -235,7 +502,7 @@ public class SDT_UI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane1)
+                    .addComponent(secciones)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -247,11 +514,12 @@ public class SDT_UI extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 532, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(secciones, javax.swing.GroupLayout.PREFERRED_SIZE, 532, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonRefrescarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonRefrescarActionPerformed
@@ -265,10 +533,121 @@ public class SDT_UI extends javax.swing.JFrame {
         listaTaxis.setListData(lista.toArray());
     }//GEN-LAST:event_botonRefrescarActionPerformed
 
-    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox1ActionPerformed
+    private void listaTaxisMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaTaxisMouseClicked
+        int id = listaTaxis.getMinSelectionIndex();
+        if(id == -1) return;
+        Taxi taxi = Taxi.taxis.get(id);
+        System.out.println(id);
+        datos_id.setText(String.format("%05d" , id));
+        if(taxi.ocupado) datos_destino.setText(taxi.destino.toString());
+        datos_ubicacion.setText(taxi.ubicacion.toString());
+        jCheckBox1.setSelected(taxi.ocupado);
+        datosTaxi.setVisible(true);
+    }//GEN-LAST:event_listaTaxisMouseClicked
+    
+    private Taxi taxiMasCercano = null;
+    
+    private void buscarTaxiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarTaxiActionPerformed
+        peticion_direccion.setEnabled(false);
+        peticion_nombre.setEnabled(false);
+        peticion_telefono.setEnabled(false);
+        //secciones.setEnabled(false);
+        buscarTaxi.setEnabled(false);
+        int inicializadorTaxi = 0;
+        while(inicializadorTaxi < Taxi.taxis.size() && Taxi.taxis.get(inicializadorTaxi).ocupado) {
+            inicializadorTaxi++;
+        }
+        if(inicializadorTaxi >= Taxi.taxis.size()) {
+            cerrarVentanaSolicitarActionPerformed(null);
+            return;
+        }
+        Taxi masCercano = Taxi.taxis.get(inicializadorTaxi);
+        Direccion destino = Direccion.direcciones.get(peticion_direccion.getSelectedIndex());
+        int minimaDistancia = calcularDistancia(masCercano.ubicacion, destino);
+        for(Iterator<Taxi> taxiIterador = Taxi.taxis.iterator(); taxiIterador.hasNext();) {
+            Taxi taxi = taxiIterador.next();
+            if(!taxi.ocupado) {
+                int distanciaTaxiActual = calcularDistancia(taxi.ubicacion, destino);
+                if(distanciaTaxiActual < minimaDistancia) {
+                    minimaDistancia = distanciaTaxiActual;
+                    masCercano = taxi;
+                }
+            }
+        }
+        taxiMasCercano = masCercano;
+        ventanaSolicitar.setLocationRelativeTo(null);
+        ventanaError.setLocationRelativeTo(null);
+        ventanaSolicitar.setVisible(true);
+    }//GEN-LAST:event_buscarTaxiActionPerformed
 
+    private void solicitarTaxiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_solicitarTaxiActionPerformed
+        if(!taxiMasCercano.ocupado) {
+            if(taxiMasCercano.ocupar(Direccion.direcciones.get(peticion_direccion.getSelectedIndex()))==0) {
+                cerrarVentanaSolicitarActionPerformed(null);
+            }
+            else {
+               mensajeError.setText("¡ERROR! Fallo en la comunicación.");
+                ventanaSolicitar.setVisible(false);
+                ventanaError.setVisible(true); 
+            }
+        }
+        else {
+            mensajeError.setText("¡ERROR! El taxi ahora está ocupado.");
+            ventanaSolicitar.setVisible(false);
+            ventanaError.setVisible(true);
+        }
+    }//GEN-LAST:event_solicitarTaxiActionPerformed
+
+    private void cerrarVentanaSolicitarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cerrarVentanaSolicitarActionPerformed
+        ventanaError.setVisible(false);
+        ventanaSolicitar.setVisible(false);
+        peticion_direccion.setEnabled(true);
+        peticion_nombre.setEnabled(true);
+        peticion_telefono.setEnabled(true);
+        secciones.setEnabled(true);
+        buscarTaxi.setEnabled(true);
+    }//GEN-LAST:event_cerrarVentanaSolicitarActionPerformed
+
+    private void ventanaSolicitarWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_ventanaSolicitarWindowActivated
+        solicitarTaxi.setText(String.format("%05d" , taxiMasCercano.id));
+    }//GEN-LAST:event_ventanaSolicitarWindowActivated
+
+    private void solicitarTaxiErrorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_solicitarTaxiErrorActionPerformed
+        solicitarTaxiActionPerformed(null);
+    }//GEN-LAST:event_solicitarTaxiErrorActionPerformed
+
+    private void ventanaErrorWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_ventanaErrorWindowActivated
+        solicitarTaxiError.setText(String.format("%05d" , taxiMasCercano.id));
+    }//GEN-LAST:event_ventanaErrorWindowActivated
+
+    private void cerrarVentanaErrorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cerrarVentanaErrorActionPerformed
+        cerrarVentanaSolicitarActionPerformed(null);
+    }//GEN-LAST:event_cerrarVentanaErrorActionPerformed
+
+    Taxi taxiActual = null;
+    
+    public static int calcularDistancia(Direccion origen, Direccion destino) {
+        Direccion actual = origen;
+        int distancia = 0;
+        int distancia2 = 0;
+        int indiceSiguiente = Direccion.direcciones.indexOf(origen);
+        while(actual != destino) {
+            distancia += actual.distanciaSiguiente;
+            indiceSiguiente = (indiceSiguiente + 1)% Direccion.direcciones.size();
+            actual = Direccion.direcciones.get(indiceSiguiente);
+        }
+        actual = origen;
+        indiceSiguiente = Direccion.direcciones.indexOf(origen);
+        while(actual != destino) {
+            distancia2 += actual.distanciaSiguiente;
+            indiceSiguiente--;
+            if(indiceSiguiente < 0) indiceSiguiente = Direccion.direcciones.size()-1;
+            actual = Direccion.direcciones.get(indiceSiguiente);
+        }
+        
+        return (distancia < distancia2 ? distancia : distancia2);
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -305,28 +684,46 @@ public class SDT_UI extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonRefrescar;
+    private javax.swing.JButton buscarTaxi;
+    private javax.swing.JButton cerrarVentanaError;
+    private javax.swing.JButton cerrarVentanaSolicitar;
+    private javax.swing.JPanel datosTaxi;
+    private javax.swing.JTextPane datos_destino;
+    private javax.swing.JTextPane datos_id;
+    private javax.swing.JTextPane datos_ubicacion;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTabbedPane jTabbedPane2;
-    private javax.swing.JTabbedPane jTabbedPane3;
-    private javax.swing.JTextPane jTextPane1;
-    private javax.swing.JTextPane jTextPane2;
-    private javax.swing.JTextPane jTextPane3;
     private javax.swing.JList listaTaxis;
+    private javax.swing.JLabel mensajeError;
+    private javax.swing.JComboBox peticion_direccion;
+    private javax.swing.JTextField peticion_nombre;
+    private javax.swing.JTextField peticion_telefono;
+    private javax.swing.JTabbedPane secciones;
+    private javax.swing.JButton solicitarTaxi;
+    private javax.swing.JButton solicitarTaxiError;
+    private javax.swing.JDialog ventanaError;
+    private javax.swing.JDialog ventanaSolicitar;
     // End of variables declaration//GEN-END:variables
 }

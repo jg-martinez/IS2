@@ -15,32 +15,43 @@ import java.util.List;
  */
 public class Direccion {
     String nombre = null;
-    int distanciaSiguiente = 1;
+    public int distanciaSiguiente = 1;
     
     Direccion(String _nombre, int _distancia) {
         nombre = _nombre;
         distanciaSiguiente = _distancia;
     }
     
-    static List<Direccion> direcciones = new ArrayList<>();
+    public static List<Direccion> direcciones = new ArrayList<>();
     
+    private static int tiempoMaximo = 20;
     static void simular() {
-        direcciones.add(new Direccion("Clare Mount", (int)(Math.random()*20)));
-        direcciones.add(new Direccion("Exchequer Promenade", (int)(Math.random()*20)));
-        direcciones.add(new Direccion("Davis Terrace", (int)(Math.random()*20)));
-        direcciones.add(new Direccion("Majora Street", (int)(Math.random()*20)));
-        direcciones.add(new Direccion("Harrington Causeway", (int)(Math.random()*20)));
-        direcciones.add(new Direccion("Strand Square", (int)(Math.random()*20)));
-        direcciones.add(new Direccion("Stephen Street", (int)(Math.random()*20)));
-        direcciones.add(new Direccion("O'Connell Villas", (int)(Math.random()*20)));
-        direcciones.add(new Direccion("Brabazon Cottages", (int)(Math.random()*20)));
-        direcciones.add(new Direccion("Francis Way", (int)(Math.random()*20)));
-        direcciones.add(new Direccion("Wood Avenue", (int)(Math.random()*20)));
-        direcciones.add(new Direccion("Parliament Villas", (int)(Math.random()*20)));
-        direcciones.add(new Direccion("Grafton Walk", (int)(Math.random()*20)));
-        direcciones.add(new Direccion("Harcourt Croft", (int)(Math.random()*20)));
-        direcciones.add(new Direccion("Sean Mcdermott Avenue", (int)(Math.random()*20)));
-        direcciones.add(new Direccion("Brabazon Yard", (int)(Math.random()*20)));
+        direcciones.add(new Direccion("Clare Mount", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Exchequer Promenade", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Davis Terrace", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Majora Street", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Harrington Causeway", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Strand Square", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Stephen Street", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("O'Connell Villas", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Brabazon Cottages", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Francis Way", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Wood Avenue", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Parliament Villas", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Grafton Walk", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Harcourt Croft", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Sean Mcdermott Avenue", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Brabazon Yard", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Of Passage", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Clarence Circus", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Emmett Court", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Thomas Link", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Narrow Caboches Pavement", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Mountjoy Street", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Heytesbury Drive", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Frenschemanne Lawn", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("New Chapel Drive", (int)(Math.random()*tiempoMaximo)));
+        direcciones.add(new Direccion("Pembroke Boulevard", (int)(Math.random()*tiempoMaximo)));
     }
     
     public String toString() {

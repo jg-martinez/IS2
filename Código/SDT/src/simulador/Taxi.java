@@ -4,10 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.Timer;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 /*
  * To change this template, choose Tools | Templates
@@ -67,7 +64,15 @@ public class Taxi {
         tiempo--;
         if(tiempo <= 0) {
             if(!ocupado && Math.random() > 0.9) sentido = !sentido;
-            if(!ocupado && Math.random() > 0.9) ocupar(Direccion.direcciones.get((int)(Math.random()*Direccion.direcciones.size())));
+            if(!ocupado && Math.random() > 0.8) ocupar(Direccion.direcciones.get((int)(Math.random()*Direccion.direcciones.size())));
+            if(ocupado) {
+                if(ubicacion == destino) {
+                    ocupado = false;
+                    destino = null;
+                    tiempo = 1;
+                    return;
+                }
+            }
             if(sentido) {
                 ubicacion = Direccion.direcciones.get((idDireccion +1)%Direccion.direcciones.size());
             }
@@ -77,16 +82,12 @@ public class Taxi {
                 ubicacion = Direccion.direcciones.get(auxiliar);
             }
             tiempo = ubicacion.distanciaSiguiente;
-            if(ocupado) {
-                if(ubicacion == destino) {
-                    ocupado = false;
-                    destino = null;
-                }
-            }
+            
         }
     }
     
-    void ocupar(Direccion nuevoDestino) {
+    public int ocupar(Direccion nuevoDestino) {
+        if(Math.random() > 0.9) return 1;
         ocupado = true;
         destino = nuevoDestino;
         int idOrigen = Direccion.direcciones.indexOf(ubicacion);
@@ -95,6 +96,7 @@ public class Taxi {
         int distancia = idOrigen - idDestino;
         sentido = distancia < 0;
         if(distancia == 0) tiempo = 1;
+        return 0;
     }
     
 }
