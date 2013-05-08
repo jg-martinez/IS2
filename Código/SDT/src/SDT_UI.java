@@ -46,7 +46,7 @@ public class SDT_UI extends javax.swing.JFrame {
         
         
         peticion_direccion.removeAll();
-        List<String> lista = new ArrayList<>();
+        List<String> lista = new ArrayList<String>();
         for(Iterator<Direccion> direccionIterador = Direccion.direcciones.iterator(); direccionIterador.hasNext();) {
             Direccion direccion = direccionIterador.next();
             lista.add(direccion.toString());
@@ -84,6 +84,7 @@ public class SDT_UI extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
         datosTaxi = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         datos_id = new javax.swing.JTextPane();
@@ -107,11 +108,9 @@ public class SDT_UI extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
 
         ventanaSolicitar.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        ventanaSolicitar.setMaximumSize(new java.awt.Dimension(350, 300));
         ventanaSolicitar.setMinimumSize(new java.awt.Dimension(350, 300));
-        ventanaSolicitar.setPreferredSize(new java.awt.Dimension(350, 300));
         ventanaSolicitar.setResizable(false);
-        ventanaSolicitar.setType(java.awt.Window.Type.UTILITY);
+        //ventanaSolicitar.setType(java.awt.Window.Type.UTILITY);
         ventanaSolicitar.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowActivated(java.awt.event.WindowEvent evt) {
                 ventanaSolicitarWindowActivated(evt);
@@ -176,11 +175,9 @@ public class SDT_UI extends javax.swing.JFrame {
         );
 
         ventanaError.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        ventanaError.setMaximumSize(new java.awt.Dimension(350, 300));
         ventanaError.setMinimumSize(new java.awt.Dimension(350, 300));
-        ventanaError.setPreferredSize(new java.awt.Dimension(350, 300));
         ventanaError.setResizable(false);
-        ventanaError.setType(java.awt.Window.Type.UTILITY);
+        //ventanaError.setType(java.awt.Window.Type.UTILITY);
         ventanaError.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowActivated(java.awt.event.WindowEvent evt) {
                 ventanaErrorWindowActivated(evt);
@@ -284,14 +281,13 @@ public class SDT_UI extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel5.setText("Destino");
 
+        jLabel14.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel14.setText("Destino");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(666, Short.MAX_VALUE)
-                .addComponent(botonRefrescar, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(54, 54, 54))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -304,8 +300,14 @@ public class SDT_UI extends javax.swing.JFrame {
                         .addComponent(jLabel4)
                         .addGap(82, 82, 82)
                         .addComponent(jLabel5)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(59, 59, 59)
+                        .addComponent(jLabel14)
+                        .addGap(0, 224, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(botonRefrescar, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(57, 57, 57))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -315,7 +317,8 @@ public class SDT_UI extends javax.swing.JFrame {
                     .addComponent(jLabel2)
                     .addComponent(jLabel3)
                     .addComponent(jLabel4)
-                    .addComponent(jLabel5))
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel14))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -524,7 +527,7 @@ public class SDT_UI extends javax.swing.JFrame {
 
     private void botonRefrescarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonRefrescarActionPerformed
         listaTaxis.removeAll();
-        List<String> lista = new ArrayList<>();
+        List<String> lista = new ArrayList<String>();
         for(Iterator<Taxi> taxiIterador = Taxi.taxis.iterator(); taxiIterador.hasNext();) {
             Taxi taxi = taxiIterador.next();
             //lista.add("ID del taxi: \t" + taxi.id + "\t\tUbicación actual: \t" + taxi.ubicacion + " ");
@@ -537,6 +540,7 @@ public class SDT_UI extends javax.swing.JFrame {
         int id = listaTaxis.getMinSelectionIndex();
         if(id == -1) return;
         Taxi taxi = Taxi.taxis.get(id);
+        
         System.out.println(id);
         datos_id.setText(String.format("%05d" , id));
         if(taxi.ocupado) datos_destino.setText(taxi.destino.toString());
@@ -697,6 +701,7 @@ public class SDT_UI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -715,7 +720,7 @@ public class SDT_UI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JList listaTaxis;
+    public javax.swing.JList listaTaxis;
     private javax.swing.JLabel mensajeError;
     private javax.swing.JComboBox peticion_direccion;
     private javax.swing.JTextField peticion_nombre;
