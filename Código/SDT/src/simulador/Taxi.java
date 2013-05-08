@@ -35,7 +35,7 @@ public class Taxi {
     
     private int tiempo = 0;
     private boolean sentido = true;
-    public static List<Taxi> taxis = new ArrayList<>();
+    public static List<Taxi> taxis = new ArrayList<Taxi>();
     static boolean continuarSimulacion = true;
     
     public static void simular(int numTaxis) {

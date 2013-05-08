@@ -22,7 +22,7 @@ public class Direccion {
         distanciaSiguiente = _distancia;
     }
     
-    public static List<Direccion> direcciones = new ArrayList<>();
+    public static List<Direccion> direcciones = new ArrayList<Direccion>();
     
     private static int tiempoMaximo = 20;
     static void simular() {
@@ -54,6 +54,7 @@ public class Direccion {
         direcciones.add(new Direccion("Pembroke Boulevard", (int)(Math.random()*tiempoMaximo)));
     }
     
+    @Override
     public String toString() {
         return nombre;
     }
