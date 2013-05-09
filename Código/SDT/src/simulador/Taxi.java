@@ -16,9 +16,6 @@ import javax.swing.Timer;
  * @author Rugnor
  */
 
-
-
-
 public class Taxi {
     public int id;
     public boolean ocupado = false; 

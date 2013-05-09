@@ -25,15 +25,16 @@ public class SDT_UI extends javax.swing.JFrame {
      */
     public SDT_UI() {
         initComponents();
-        Taxi.simular(30);
-        botonRefrescarActionPerformed(null);
-        int ratio = 1000; //milliseconds
+        
+        Taxi.simular(30);//inicializa el simulador con N taxis
+        botonRefrescarActionPerformed(null);//inicializa la tabla
+        int ratio = 1000; //frecuencia de actualización de la tabla en milisegundos
         ActionListener temporizador = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 botonRefrescarActionPerformed(null);
             }
         };
-        new Timer(ratio, temporizador).start();
+        new Timer(ratio, temporizador).start();//temporizador para la tabla
         
         
         listaTaxis.addListSelectionListener(new ListSelectionListener()
@@ -42,16 +43,16 @@ public class SDT_UI extends javax.swing.JFrame {
           {
             listaTaxisMouseClicked(null);
           } 
-        });
+        });//listener para el evento de hacer click en la tabla con el ratón
         
         
-        peticion_direccion.removeAll();
+        peticion_direccion.removeAll();//reinicia el comboBox de direcciones
         List<String> lista = new ArrayList<String>();
         for(Iterator<Direccion> direccionIterador = Direccion.direcciones.iterator(); direccionIterador.hasNext();) {
             Direccion direccion = direccionIterador.next();
             lista.add(direccion.toString());
         }
-        peticion_direccion.setModel(new javax.swing.DefaultComboBoxModel(lista.toArray()));
+        peticion_direccion.setModel(new javax.swing.DefaultComboBoxModel(lista.toArray()));//llena el comboBox de direcciones
     }
 
     /**
@@ -525,50 +526,57 @@ public class SDT_UI extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    //Solicitar lista de taxis
     private void botonRefrescarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonRefrescarActionPerformed
-        listaTaxis.removeAll();
+        listaTaxis.removeAll(); //reinicia la lista
         List<String> lista = new ArrayList<String>();
         for(Iterator<Taxi> taxiIterador = Taxi.taxis.iterator(); taxiIterador.hasNext();) {
             Taxi taxi = taxiIterador.next();
             //lista.add("ID del taxi: \t" + taxi.id + "\t\tUbicación actual: \t" + taxi.ubicacion + " ");
             lista.add(String.format("%05d%-14s%-28s%-22s%-28s" , taxi.id,"", taxi.ubicacion, taxi.ocupado ? "Ocupado" : "Libre", taxi.ocupado ? taxi.destino : "" ));
-        }
-        listaTaxis.setListData(lista.toArray());
+        } //solicita todos los taxis
+        listaTaxis.setListData(lista.toArray()); //rellena la lista
     }//GEN-LAST:event_botonRefrescarActionPerformed
 
+    //Mostrar datos de un taxi
     private void listaTaxisMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaTaxisMouseClicked
-        int id = listaTaxis.getMinSelectionIndex();
+        int id = listaTaxis.getMinSelectionIndex(); //obtiene el id seleccionado
         if(id == -1) return;
-        Taxi taxi = Taxi.taxis.get(id);
+        Taxi taxi = Taxi.taxis.get(id); //obtiene los datos del taxi
         
-        System.out.println(id);
-        datos_id.setText(String.format("%05d" , id));
-        if(taxi.ocupado) datos_destino.setText(taxi.destino.toString());
-        datos_ubicacion.setText(taxi.ubicacion.toString());
-        jCheckBox1.setSelected(taxi.ocupado);
-        datosTaxi.setVisible(true);
+        datos_id.setText(String.format("%05d" , id)); 
+        if(taxi.ocupado) datos_destino.setText(taxi.destino.toString()); //llena el campo de destino
+        else datos_destino.setText(""); //o lo vacia, si no exite
+        datos_ubicacion.setText(taxi.ubicacion.toString()); //campo de ubicacion
+        jCheckBox1.setSelected(taxi.ocupado); //campo de ocupado
+        datosTaxi.setVisible(true); //se asegura de que la ventana de datos es visible
     }//GEN-LAST:event_listaTaxisMouseClicked
     
-    private Taxi taxiMasCercano = null;
+    private Taxi taxiMasCercano = null; //ultimo taxi designado como optimo
     
+    //buscar un taxi optimo y mostrar ventana de asignarlo
     private void buscarTaxiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarTaxiActionPerformed
-        peticion_direccion.setEnabled(false);
+        peticion_direccion.setEnabled(false); //se desactiva parte de la interfaz
         peticion_nombre.setEnabled(false);
         peticion_telefono.setEnabled(false);
         //secciones.setEnabled(false);
         buscarTaxi.setEnabled(false);
-        int inicializadorTaxi = 0;
+        
+        int inicializadorTaxi = 0; //se inicializa la busqueda buscando el primer taxi libre
         while(inicializadorTaxi < Taxi.taxis.size() && Taxi.taxis.get(inicializadorTaxi).ocupado) {
             inicializadorTaxi++;
         }
-        if(inicializadorTaxi >= Taxi.taxis.size()) {
+        
+        if(inicializadorTaxi >= Taxi.taxis.size()) { //si no encuentra ninguno libre, reactiva la interfaz y no realiza mas acciones
             cerrarVentanaSolicitarActionPerformed(null);
             return;
         }
+        
+        //se busca, de entre todos los taxis libres en este momento, el que menos tardaria en llegar al destino solicitado
         Taxi masCercano = Taxi.taxis.get(inicializadorTaxi);
         Direccion destino = Direccion.direcciones.get(peticion_direccion.getSelectedIndex());
         int minimaDistancia = calcularDistancia(masCercano.ubicacion, destino);
-        for(Iterator<Taxi> taxiIterador = Taxi.taxis.iterator(); taxiIterador.hasNext();) {
+        for(Iterator<Taxi> taxiIterador = Taxi.taxis.iterator(); taxiIterador.hasNext();) { 
             Taxi taxi = taxiIterador.next();
             if(!taxi.ocupado) {
                 int distanciaTaxiActual = calcularDistancia(taxi.ubicacion, destino);
@@ -578,30 +586,34 @@ public class SDT_UI extends javax.swing.JFrame {
                 }
             }
         }
+        
         taxiMasCercano = masCercano;
-        ventanaSolicitar.setLocationRelativeTo(null);
+        ventanaSolicitar.setLocationRelativeTo(null); //se inicializa y lanza el dialogo de asignar taxi
         ventanaError.setLocationRelativeTo(null);
         ventanaSolicitar.setVisible(true);
     }//GEN-LAST:event_buscarTaxiActionPerformed
 
+    //se intenta mandar un mensaje al taxi optimo
     private void solicitarTaxiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_solicitarTaxiActionPerformed
-        if(!taxiMasCercano.ocupado) {
+        if(!taxiMasCercano.ocupado) { //si esta libre, intentar enviar el mensaje
+            //si consigue ocupar el taxi, cierra el dialogo y reactiva interfaz
             if(taxiMasCercano.ocupar(Direccion.direcciones.get(peticion_direccion.getSelectedIndex()))==0) {
-                cerrarVentanaSolicitarActionPerformed(null);
+                cerrarVentanaSolicitarActionPerformed(null); 
             }
-            else {
-               mensajeError.setText("¡ERROR! Fallo en la comunicación.");
+            else {//si no, lanza el dialogo de error con el mensaje correspondiente
+               mensajeError.setText("¡ERROR! Fallo en la comunicación."); 
                 ventanaSolicitar.setVisible(false);
                 ventanaError.setVisible(true); 
             }
         }
-        else {
+        else { //si el taxi esta ocupado, lanzar error
             mensajeError.setText("¡ERROR! El taxi ahora está ocupado.");
             ventanaSolicitar.setVisible(false);
             ventanaError.setVisible(true);
         }
     }//GEN-LAST:event_solicitarTaxiActionPerformed
 
+    //se cierra la ventana de asignar un taxi y reactiva la interfaz
     private void cerrarVentanaSolicitarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cerrarVentanaSolicitarActionPerformed
         ventanaError.setVisible(false);
         ventanaSolicitar.setVisible(false);
@@ -612,24 +624,29 @@ public class SDT_UI extends javax.swing.JFrame {
         buscarTaxi.setEnabled(true);
     }//GEN-LAST:event_cerrarVentanaSolicitarActionPerformed
 
+    //actualizar el id del taxi optimo al abrir el dialogo de asignar
     private void ventanaSolicitarWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_ventanaSolicitarWindowActivated
         solicitarTaxi.setText(String.format("%05d" , taxiMasCercano.id));
     }//GEN-LAST:event_ventanaSolicitarWindowActivated
 
+    //se hace click en reintentar mandar el mensaje
     private void solicitarTaxiErrorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_solicitarTaxiErrorActionPerformed
         solicitarTaxiActionPerformed(null);
     }//GEN-LAST:event_solicitarTaxiErrorActionPerformed
 
+    //actualizar el id del taxi optimo al abrir el dialogo de error
     private void ventanaErrorWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_ventanaErrorWindowActivated
         solicitarTaxiError.setText(String.format("%05d" , taxiMasCercano.id));
     }//GEN-LAST:event_ventanaErrorWindowActivated
 
+    //se cierra la ventana de error y reactiva la interfaz
     private void cerrarVentanaErrorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cerrarVentanaErrorActionPerformed
         cerrarVentanaSolicitarActionPerformed(null);
     }//GEN-LAST:event_cerrarVentanaErrorActionPerformed
 
     Taxi taxiActual = null;
     
+    //funcion auxiliar que calcula el tiempo que tardaria un taxi cualquiera en llegar de un punto a otro
     public static int calcularDistancia(Direccion origen, Direccion destino) {
         Direccion actual = origen;
         int distancia = 0;
