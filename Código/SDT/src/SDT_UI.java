@@ -1,12 +1,23 @@
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.JList;
+import javax.swing.ListModel;
 import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import simulador.BD_Peticiones;
 import simulador.Direccion;
+import simulador.Peticion;
 import simulador.Taxi;
 
 /*
@@ -18,8 +29,83 @@ import simulador.Taxi;
  *
  * @author Rugnor
  */
-public class SDT_UI extends javax.swing.JFrame {
 
+class ListaTooltip extends JList {
+	    public ListaTooltip() {
+	        super();
+	 
+	    // Attach a mouse motion adapter to let us know the mouse is over an item and to show the tip.
+	    addMouseMotionListener( new MouseMotionAdapter() {
+	        public void mouseMoved( MouseEvent e) {
+	            ListaTooltip theList = (ListaTooltip) e.getSource();
+	            ListModel model = theList.getModel();
+	            int index = theList.locationToIndex(e.getPoint());
+	            if (index > -1) {
+	                theList.setToolTipText(null);
+	                String text = (String) model.getElementAt(index);
+	                theList.setToolTipText(text);
+	            }
+	        }
+	    });
+    }
+	 
+	    // Expose the getToolTipText event of our JList
+	    public String getToolTipText(MouseEvent e){
+	        return super.getToolTipText();
+	    }
+	 
+}
+
+
+
+public class SDT_UI extends javax.swing.JFrame {
+    
+    class threadEscribirPeticiones extends Thread {
+
+        public void run() {
+            descargarHistorial.setEnabled(false);
+            cancelarDescarga.setEnabled(true);
+            
+            try{
+                File file = new File("logPeticiones.txt");
+                if(file.exists()) {
+                    file.delete();
+                    file.createNewFile();
+                }
+                
+                FileWriter fstream = new FileWriter("logPeticiones.txt");
+                BufferedWriter archivo = new BufferedWriter(fstream);
+                barraProgreso.setValue(0);
+                Peticion[] peticiones = BD_Peticiones.getPeticiones();
+                for(int i = 0; i < peticiones.length; i++) {
+                    if(cancelarLog)  break;
+                    barraProgreso.setValue((int)(((float)(i+1)/(float)peticiones.length)*100.0));
+                    archivo.write(peticiones[i].toString());
+                    try {  //tiempo extra para las pruebas
+                        Thread.sleep(1);  
+                    }  
+                        catch (InterruptedException e) {  
+                    }
+
+                }
+
+                archivo.close();
+
+                if(cancelarLog) cancelarLog = false;
+                else barraProgreso.setValue(100);
+            }
+            catch (Exception e) {
+                System.err.println("Error: " + e.getMessage());
+            }
+
+            descargarHistorial.setEnabled(true);
+            cancelarDescarga.setEnabled(false);
+        }
+
+    }
+    
+    public boolean cancelarLog = false;
+    
     /**
      * Creates new form SDT_UI
      */
@@ -45,7 +131,6 @@ public class SDT_UI extends javax.swing.JFrame {
           } 
         });//listener para el evento de hacer click en la tabla con el ratón
         
-        
         peticion_direccion.removeAll();//reinicia el comboBox de direcciones
         List<String> lista = new ArrayList<String>();
         for(Iterator<Direccion> direccionIterador = Direccion.direcciones.iterator(); direccionIterador.hasNext();) {
@@ -53,6 +138,8 @@ public class SDT_UI extends javax.swing.JFrame {
             lista.add(direccion.toString());
         }
         peticion_direccion.setModel(new javax.swing.DefaultComboBoxModel(lista.toArray()));//llena el comboBox de direcciones
+        
+        BD_Peticiones.rellenarRandom(2000); //inicia la base de datos simulada con 20000 peticiones
     }
 
     /**
@@ -75,17 +162,17 @@ public class SDT_UI extends javax.swing.JFrame {
         cerrarVentanaError = new javax.swing.JButton();
         mensajeError = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
+        jPanel7 = new javax.swing.JPanel();
         secciones = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        listaTaxis = new javax.swing.JList();
+        listaTaxis = listaTaxis = new ListaTooltip();
         botonRefrescar = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
+        tituloUbicacion = new javax.swing.JLabel();
+        tituloEstado = new javax.swing.JLabel();
+        tituloDestino = new javax.swing.JLabel();
         datosTaxi = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         datos_id = new javax.swing.JTextPane();
@@ -106,7 +193,12 @@ public class SDT_UI extends javax.swing.JFrame {
         peticion_telefono = new javax.swing.JTextField();
         buscarTaxi = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
+        barraProgreso = new javax.swing.JProgressBar();
+        descargarHistorial = new javax.swing.JButton();
+        cancelarDescarga = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        iconoConexion = new javax.swing.JLabel();
+        botonConectar = new javax.swing.JButton();
 
         ventanaSolicitar.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         ventanaSolicitar.setMinimumSize(new java.awt.Dimension(350, 300));
@@ -141,11 +233,10 @@ public class SDT_UI extends javax.swing.JFrame {
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(105, 105, 105)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(cerrarVentanaSolicitar, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(105, 105, 105)
-                        .addComponent(solicitarTaxi, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(solicitarTaxi, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGap(42, 42, 42)
@@ -252,10 +343,26 @@ public class SDT_UI extends javax.swing.JFrame {
             .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         listaTaxis.setFont(new java.awt.Font("Consolas", 0, 11)); // NOI18N
         listaTaxis.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listaTaxis.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
+                listaTaxisMouseWheelMoved(evt);
+            }
+        });
         listaTaxis.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 listaTaxisMouseClicked(evt);
@@ -264,6 +371,9 @@ public class SDT_UI extends javax.swing.JFrame {
         jScrollPane1.setViewportView(listaTaxis);
 
         botonRefrescar.setText("Refrescar");
+        botonRefrescar.setMaximumSize(new java.awt.Dimension(79, 26));
+        botonRefrescar.setMinimumSize(new java.awt.Dimension(79, 26));
+        botonRefrescar.setPreferredSize(new java.awt.Dimension(79, 26));
         botonRefrescar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 botonRefrescarActionPerformed(evt);
@@ -273,17 +383,14 @@ public class SDT_UI extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel2.setText("Taxi");
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel3.setText("Ubicación");
+        tituloUbicacion.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        tituloUbicacion.setText("Ubicación");
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel4.setText("Estado");
+        tituloEstado.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        tituloEstado.setText("Estado");
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel5.setText("Destino");
-
-        jLabel14.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel14.setText("Destino");
+        tituloDestino.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        tituloDestino.setText("Destino");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -296,19 +403,17 @@ public class SDT_UI extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addGap(89, 89, 89)
-                        .addComponent(jLabel3)
+                        .addComponent(tituloUbicacion)
                         .addGap(90, 90, 90)
-                        .addComponent(jLabel4)
+                        .addComponent(tituloEstado)
                         .addGap(82, 82, 82)
-                        .addComponent(jLabel5)
-                        .addGap(59, 59, 59)
-                        .addComponent(jLabel14)
-                        .addGap(0, 224, Short.MAX_VALUE)))
+                        .addComponent(tituloDestino)
+                        .addGap(0, 342, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(botonRefrescar, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(57, 57, 57))
+                .addComponent(botonRefrescar, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(22, 22, 22))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -316,15 +421,14 @@ public class SDT_UI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel14))
+                    .addComponent(tituloUbicacion)
+                    .addComponent(tituloEstado)
+                    .addComponent(tituloDestino))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(botonRefrescar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(botonRefrescar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         datosTaxi.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
@@ -483,15 +587,45 @@ public class SDT_UI extends javax.swing.JFrame {
 
         secciones.addTab("Nueva Petición", jPanel3);
 
+        descargarHistorial.setText("Descargar historial de peticiones");
+        descargarHistorial.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                descargarHistorialActionPerformed(evt);
+            }
+        });
+
+        cancelarDescarga.setText("Cancelar");
+        cancelarDescarga.setEnabled(false);
+        cancelarDescarga.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelarDescargaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 863, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(barraProgreso, javax.swing.GroupLayout.PREFERRED_SIZE, 834, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(descargarHistorial, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(54, 54, 54)
+                        .addComponent(cancelarDescarga, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 504, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(48, 48, 48)
+                .addComponent(barraProgreso, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(descargarHistorial, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
+                    .addComponent(cancelarDescarga, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(342, Short.MAX_VALUE))
         );
 
         secciones.addTab("Log Peticiones", jPanel4);
@@ -499,25 +633,47 @@ public class SDT_UI extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         jLabel1.setText("Sistema de Despacho de Taxis");
 
+        iconoConexion.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/connect.png"))); // NOI18N
+        iconoConexion.setAlignmentY(0.0F);
+        iconoConexion.setDisabledIcon(new javax.swing.ImageIcon(getClass().getResource("/images/disconnect.png"))); // NOI18N
+        iconoConexion.setIconTextGap(0);
+
+        botonConectar.setText("Desconectar");
+        botonConectar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonConectarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(secciones)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(botonConectar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(iconoConexion, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(iconoConexion, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(27, 27, 27)
+                        .addComponent(botonConectar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
                 .addComponent(secciones, javax.swing.GroupLayout.PREFERRED_SIZE, 532, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -533,7 +689,8 @@ public class SDT_UI extends javax.swing.JFrame {
         for(Iterator<Taxi> taxiIterador = Taxi.taxis.iterator(); taxiIterador.hasNext();) {
             Taxi taxi = taxiIterador.next();
             //lista.add("ID del taxi: \t" + taxi.id + "\t\tUbicación actual: \t" + taxi.ubicacion + " ");
-            lista.add(String.format("%05d%-14s%-28s%-22s%-28s" , taxi.id,"", taxi.ubicacion, taxi.ocupado ? "Ocupado" : "Libre", taxi.ocupado ? taxi.destino : "" ));
+            if(conectado) lista.add(String.format("%05d%-14s%-28s%-22s%-28s" , taxi.id,"", taxi.ubicacion, taxi.ocupado ? "Ocupado" : "Libre", taxi.ocupado ? taxi.destino : "" ));
+            else lista.add(String.format("%05d" , taxi.id));
         } //solicita todos los taxis
         listaTaxis.setListData(lista.toArray()); //rellena la lista
     }//GEN-LAST:event_botonRefrescarActionPerformed
@@ -554,6 +711,8 @@ public class SDT_UI extends javax.swing.JFrame {
     
     private Taxi taxiMasCercano = null; //ultimo taxi designado como optimo
     
+    Peticion ultimaPeticion;
+    
     //buscar un taxi optimo y mostrar ventana de asignarlo
     private void buscarTaxiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarTaxiActionPerformed
         peticion_direccion.setEnabled(false); //se desactiva parte de la interfaz
@@ -561,6 +720,8 @@ public class SDT_UI extends javax.swing.JFrame {
         peticion_telefono.setEnabled(false);
         //secciones.setEnabled(false);
         buscarTaxi.setEnabled(false);
+        
+        ultimaPeticion = new Peticion(peticion_nombre.getText(), Direccion.direcciones.get(peticion_direccion.getSelectedIndex()), Integer.parseInt(peticion_telefono.getText()), new Date() );
         
         int inicializadorTaxi = 0; //se inicializa la busqueda buscando el primer taxi libre
         while(inicializadorTaxi < Taxi.taxis.size() && Taxi.taxis.get(inicializadorTaxi).ocupado) {
@@ -598,6 +759,7 @@ public class SDT_UI extends javax.swing.JFrame {
         if(!taxiMasCercano.ocupado) { //si esta libre, intentar enviar el mensaje
             //si consigue ocupar el taxi, cierra el dialogo y reactiva interfaz
             if(taxiMasCercano.ocupar(Direccion.direcciones.get(peticion_direccion.getSelectedIndex()))==0) {
+                BD_Peticiones.anadir(ultimaPeticion);
                 cerrarVentanaSolicitarActionPerformed(null); 
             }
             else {//si no, lanza el dialogo de error con el mensaje correspondiente
@@ -643,6 +805,38 @@ public class SDT_UI extends javax.swing.JFrame {
     private void cerrarVentanaErrorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cerrarVentanaErrorActionPerformed
         cerrarVentanaSolicitarActionPerformed(null);
     }//GEN-LAST:event_cerrarVentanaErrorActionPerformed
+
+    private void listaTaxisMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_listaTaxisMouseWheelMoved
+        listaTaxis.setToolTipText(null);
+    }//GEN-LAST:event_listaTaxisMouseWheelMoved
+
+    private void descargarHistorialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_descargarHistorialActionPerformed
+        descargarHistorial.setEnabled(false);
+        (new threadEscribirPeticiones()).start();
+    }//GEN-LAST:event_descargarHistorialActionPerformed
+
+    private void cancelarDescargaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarDescargaActionPerformed
+        cancelarLog = true;
+    }//GEN-LAST:event_cancelarDescargaActionPerformed
+
+    boolean conectado = true;
+    
+    private void eventoConexion() {
+        secciones.setEnabledAt(1, conectado);
+        if(secciones.getSelectedIndex() == 1) secciones.setSelectedIndex(0);
+        iconoConexion.setEnabled(conectado);
+        botonConectar.setText(conectado?"Desconectar":"Conectar");
+        datosTaxi.setVisible(conectado);
+        tituloDestino.setVisible(conectado);
+        tituloUbicacion.setVisible(conectado);
+        tituloEstado.setVisible(conectado);
+        botonRefrescar.setSize(120, 26);
+    }
+    
+    private void botonConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonConectarActionPerformed
+        conectado = !conectado;
+        eventoConexion();
+    }//GEN-LAST:event_botonConectarActionPerformed
 
     Taxi taxiActual = null;
     
@@ -704,25 +898,26 @@ public class SDT_UI extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public javax.swing.JProgressBar barraProgreso;
+    private javax.swing.JButton botonConectar;
     private javax.swing.JButton botonRefrescar;
     private javax.swing.JButton buscarTaxi;
+    private javax.swing.JButton cancelarDescarga;
     private javax.swing.JButton cerrarVentanaError;
     private javax.swing.JButton cerrarVentanaSolicitar;
     private javax.swing.JPanel datosTaxi;
     private javax.swing.JTextPane datos_destino;
     private javax.swing.JTextPane datos_id;
     private javax.swing.JTextPane datos_ubicacion;
+    private javax.swing.JButton descargarHistorial;
+    private javax.swing.JLabel iconoConexion;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
@@ -733,11 +928,12 @@ public class SDT_UI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    public javax.swing.JList listaTaxis;
+    public ListaTooltip listaTaxis;
     private javax.swing.JLabel mensajeError;
     private javax.swing.JComboBox peticion_direccion;
     private javax.swing.JTextField peticion_nombre;
@@ -745,6 +941,9 @@ public class SDT_UI extends javax.swing.JFrame {
     private javax.swing.JTabbedPane secciones;
     private javax.swing.JButton solicitarTaxi;
     private javax.swing.JButton solicitarTaxiError;
+    private javax.swing.JLabel tituloDestino;
+    private javax.swing.JLabel tituloEstado;
+    private javax.swing.JLabel tituloUbicacion;
     private javax.swing.JDialog ventanaError;
     private javax.swing.JDialog ventanaSolicitar;
     // End of variables declaration//GEN-END:variables
