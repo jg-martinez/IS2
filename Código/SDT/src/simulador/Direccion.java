@@ -4,15 +4,6 @@ package simulador;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- *
- * @author Rugnor
- */
 public class Direccion {
     String nombre = null;
     public int distanciaSiguiente = 1;
