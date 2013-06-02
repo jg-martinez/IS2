@@ -1,4 +1,3 @@
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -13,6 +12,7 @@ import java.util.List;
 import javax.swing.JList;
 import javax.swing.ListModel;
 import javax.swing.Timer;
+import javax.swing.ToolTipManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import simulador.BD_Peticiones;
@@ -25,41 +25,41 @@ import simulador.Taxi;
  * and open the template in the editor.
  */
 
-/**
- *
- * @author Rugnor
- */
-
+//clase para suscribir la lista en el gestor de tooltips centralizado y especificar el contenido del mismo
 class ListaTooltip extends JList {
-	    public ListaTooltip() {
-	        super();
-	 
-	    // Attach a mouse motion adapter to let us know the mouse is over an item and to show the tip.
-	    addMouseMotionListener( new MouseMotionAdapter() {
-	        public void mouseMoved( MouseEvent e) {
-	            ListaTooltip theList = (ListaTooltip) e.getSource();
-	            ListModel model = theList.getModel();
-	            int index = theList.locationToIndex(e.getPoint());
-	            if (index > -1) {
-	                theList.setToolTipText(null);
-	                String text = (String) model.getElementAt(index);
-	                theList.setToolTipText(text);
-	            }
-	        }
-	    });
+    public ListaTooltip() {
+        super();
+	
+        addMouseMotionListener( new MouseMotionAdapter() {
+            public void mouseMoved( MouseEvent e) {
+                ToolTipManager.sharedInstance().setDismissDelay(10*60*1000);
+                lastMouseEvent = e;
+                ListaTooltip lista = (ListaTooltip) e.getSource();
+                ListModel model = lista.getModel();
+                int index = lista.locationToIndex(e.getPoint());
+                lastIndex = index;
+                if (index > -1) {
+                    lista.setToolTipText(null);
+                    String text = (String) model.getElementAt(index);
+                    lista.setToolTipText(text);
+                }
+            }
+        }
+        );
     }
-	 
-	    // Expose the getToolTipText event of our JList
-	    public String getToolTipText(MouseEvent e){
-	        return super.getToolTipText();
-	    }
-	 
+
+    public String getToolTipText(MouseEvent e){
+        return super.getToolTipText();
+    }
+    public static MouseEvent lastMouseEvent;
+    public static int lastIndex = -1;
 }
 
 
 
 public class SDT_UI extends javax.swing.JFrame {
     
+    //clase para el thread que descarga el log de peticiones
     class threadEscribirPeticiones extends Thread {
 
         public void run() {
@@ -104,7 +104,7 @@ public class SDT_UI extends javax.swing.JFrame {
 
     }
     
-    public boolean cancelarLog = false;
+    public boolean cancelarLog = false; //flag que escucha el proceso de generar el log de peticiones para cancelarse
     
     /**
      * Creates new form SDT_UI
@@ -452,6 +452,7 @@ public class SDT_UI extends javax.swing.JFrame {
         jCheckBox1.setText("Ocupado");
         jCheckBox1.setEnabled(false);
         jCheckBox1.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        jCheckBox1.setOpaque(false);
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel9.setText("Datos del taxi");
@@ -461,24 +462,25 @@ public class SDT_UI extends javax.swing.JFrame {
         datosTaxiLayout.setHorizontalGroup(
             datosTaxiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(datosTaxiLayout.createSequentialGroup()
-                .addGroup(datosTaxiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, datosTaxiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, datosTaxiLayout.createSequentialGroup()
-                            .addComponent(jLabel8)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(datosTaxiLayout.createSequentialGroup()
-                            .addGap(32, 32, 32)
-                            .addComponent(jLabel7)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, datosTaxiLayout.createSequentialGroup()
-                        .addGap(32, 32, 32)
+                .addGap(32, 32, 32)
+                .addGroup(datosTaxiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(datosTaxiLayout.createSequentialGroup()
                         .addComponent(jLabel9)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jCheckBox1)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jCheckBox1))
+                    .addGroup(datosTaxiLayout.createSequentialGroup()
+                        .addGroup(datosTaxiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, datosTaxiLayout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                            .addGroup(datosTaxiLayout.createSequentialGroup()
+                                .addComponent(jLabel8)
+                                .addGap(8, 8, 8)))
+                        .addGroup(datosTaxiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane3)
+                            .addComponent(jScrollPane4))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         datosTaxiLayout.setVerticalGroup(
@@ -693,28 +695,45 @@ public class SDT_UI extends javax.swing.JFrame {
             else lista.add(String.format("%05d" , taxi.id));
         } //solicita todos los taxis
         listaTaxis.setListData(lista.toArray()); //rellena la lista
+        refrescarDatos();
     }//GEN-LAST:event_botonRefrescarActionPerformed
 
-    //Mostrar datos de un taxi
-    private void listaTaxisMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaTaxisMouseClicked
-        int id = listaTaxis.getMinSelectionIndex(); //obtiene el id seleccionado
+    void refrescarDatos() {
+        if(ListaTooltip.lastMouseEvent != null) listaTaxis.dispatchEvent(ListaTooltip.lastMouseEvent);
+        int id = ultimoTaxiClicado;
         if(id == -1) return;
         Taxi taxi = Taxi.taxis.get(id); //obtiene los datos del taxi
-        
         datos_id.setText(String.format("%05d" , id)); 
         if(taxi.ocupado) datos_destino.setText(taxi.destino.toString()); //llena el campo de destino
         else datos_destino.setText(""); //o lo vacia, si no exite
         datos_ubicacion.setText(taxi.ubicacion.toString()); //campo de ubicacion
         jCheckBox1.setSelected(taxi.ocupado); //campo de ocupado
         datosTaxi.setVisible(true); //se asegura de que la ventana de datos es visible
+    }
+    
+    int ultimoTaxiClicado = -1;
+    //Mostrar datos de un taxi
+    private void listaTaxisMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaTaxisMouseClicked
+        if(!conectado) return;
+        
+        int id = listaTaxis.getMinSelectionIndex(); //obtiene el id seleccionado
+        if(id != -1) ultimoTaxiClicado = id;
+        refrescarDatos();
     }//GEN-LAST:event_listaTaxisMouseClicked
     
     private Taxi taxiMasCercano = null; //ultimo taxi designado como optimo
     
-    Peticion ultimaPeticion;
+    Peticion ultimaPeticion; //ultimo objeto Peticion construido, listo para entrar en la BBDD
     
     //buscar un taxi optimo y mostrar ventana de asignarlo
     private void buscarTaxiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarTaxiActionPerformed
+        if(peticion_nombre.getText() == "") return;
+        try{
+            if(Integer.parseInt(peticion_telefono.getText()) < 600000000) return;
+        }
+        catch(Exception e){
+            return;
+        }
         peticion_direccion.setEnabled(false); //se desactiva parte de la interfaz
         peticion_nombre.setEnabled(false);
         peticion_telefono.setEnabled(false);
@@ -784,6 +803,8 @@ public class SDT_UI extends javax.swing.JFrame {
         peticion_telefono.setEnabled(true);
         secciones.setEnabled(true);
         buscarTaxi.setEnabled(true);
+        peticion_nombre.setText("");
+        peticion_telefono.setText("");
     }//GEN-LAST:event_cerrarVentanaSolicitarActionPerformed
 
     //actualizar el id del taxi optimo al abrir el dialogo de asignar
@@ -806,21 +827,25 @@ public class SDT_UI extends javax.swing.JFrame {
         cerrarVentanaSolicitarActionPerformed(null);
     }//GEN-LAST:event_cerrarVentanaErrorActionPerformed
 
+    //caza el evento de movel la rueda del raton para evitar que el tooltip se bloquee
     private void listaTaxisMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_listaTaxisMouseWheelMoved
         listaTaxis.setToolTipText(null);
     }//GEN-LAST:event_listaTaxisMouseWheelMoved
 
+    //descargar el historial de logs
     private void descargarHistorialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_descargarHistorialActionPerformed
         descargarHistorial.setEnabled(false);
         (new threadEscribirPeticiones()).start();
     }//GEN-LAST:event_descargarHistorialActionPerformed
 
+    //boton para cancelar la descarga
     private void cancelarDescargaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarDescargaActionPerformed
         cancelarLog = true;
     }//GEN-LAST:event_cancelarDescargaActionPerformed
 
     boolean conectado = true;
     
+    //se lanza al realizarse un cambio en el estado de la conexión
     private void eventoConexion() {
         secciones.setEnabledAt(1, conectado);
         if(secciones.getSelectedIndex() == 1) secciones.setSelectedIndex(0);
