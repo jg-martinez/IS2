@@ -111,7 +111,7 @@ public class SDT_UI extends javax.swing.JFrame {
      */
     public SDT_UI() {
         initComponents();
-        
+        this.setIconImage(new javax.swing.ImageIcon(getClass().getResource("/images/t.png")).getImage());
         Taxi.simular(30);//inicializa el simulador con N taxis
         botonRefrescarActionPerformed(null);//inicializa la tabla
         int ratio = 1000; //frecuencia de actualización de la tabla en milisegundos
