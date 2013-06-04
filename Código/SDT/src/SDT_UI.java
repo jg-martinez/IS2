@@ -40,7 +40,8 @@ class ListaTooltip extends JList {
                 lastIndex = index;
                 if (index > -1) {
                     lista.setToolTipText(null);
-                    String text = (String) model.getElementAt(index);
+                    Taxi taxi = Taxi.taxis.get(index);
+                    String text = SDT_UI.conectado ? String.format("El taxi %05d está %s." , taxi.id, taxi.ocupado ? "ocupado" : "libre" ) :  String.format("Taxi %05d  desconectado." , taxi.id);
                     lista.setToolTipText(text);
                 }
             }
@@ -843,7 +844,7 @@ public class SDT_UI extends javax.swing.JFrame {
         cancelarLog = true;
     }//GEN-LAST:event_cancelarDescargaActionPerformed
 
-    boolean conectado = true;
+    public static boolean conectado = true;
     
     //se lanza al realizarse un cambio en el estado de la conexión
     private void eventoConexion() {
